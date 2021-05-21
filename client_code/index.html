@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>blog</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="editor.md/css/editormd.css" />
+
+
+<!--style 标签中写的就是css-->
+<style>
+    [v-cloak]{
+        display: none;
+    }
+</style>
+</head>
+
+<body id="blog">
+
+
+<!-- content srart -->
+<div class="am-g am-g-fixed blog-fixed" id="app">
+    <div class="am-u-md-8 am-u-sm-12" v-show="blog.blog_id==null">
+
+        <article class="am-g blog-entry-article" v-for="blog in blogs" v-cloak> 
+            <!--v-for = " " 循环-->
+            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-img">
+            </div>
+            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text">
+                <span><a href="" class="blog-color">{{tag_idtoname(blog.tag_id)}} &nbsp;</a></span>
+                <span style = "color:snow;"> @{{author}} &nbsp;</span>
+                <span style = "color:snow;">{{blog.create_time}}</span>
+                <!--其中的v-on:click 把当前的html 标签关联上一个鼠标点击事件-->
+                    <h1><a style = "color:snow;" v-on:click="get_blog(blog.blog_id)">{{blog.title}}</a></h1>
+                <p><a href="" class="blog-continue">continue reading</a></p>
+            </div>                 
+        </article>
+    </div>
+     <div class="am-u-md-8 am-u-sm-12" v-show="blog.blog_id!=null">
+            <!--先使用editor.md完成markdown 到 html 的转换-->
+          <article id="blog_view" style="color:snow;">
+                    
+          </article>
+      </div> 
+
+    <div class="am-u-md-4 am-u-sm-12 blog-sidebar">
+        <div class="blog-sidebar-widget blog-bor " v-cloak>
+            <h2 class=" blog-clear-margin blog-text-center blog-title"><span>个人信息展示</span></h2>
+            <img src="images/21.jpg" alt="about me" class="blog-entry-img " style=" background-color:snow;" >
+            <p style="text-emphasis-color:inherit;">{{author}}</p>
+            <p style = "color:snow;"> 我是 {{author}},一个即将步入社会的本科生</p><!--插值表达式-->
+            <p style = "color:snow;">生如蝼蚁当有鸿鹄之志,命如纸薄应怀不屈之心.</p>
+        </div>
+        <div class="blog-sidebar-widget blog-bor blog-clear-margin  am-g  ">
+            <h2 class="blog-text-center blog-title "><span>联系</span></h2>
+            <p>
+                <a href=""><span class="am-icon-qq am-icon-fw am-primary blog-icon " style=" background-color:snow;"></span></a>
+                <a href="https://github.com/iTXCode"><span class="am-icon-github am-icon-fw blog-icon" style=" background-color:snow;"></span></a>
+                <a href=""><span class="am-icon-weibo am-icon-fw blog-icon" style=" background-color:snow;"></span></a>
+                <a href=""><span class="am-icon-weixin am-icon-fw blog-icon" style=" background-color:snow;"></span></a>
+            </p>
+        </div>
+        <div class="blog-clear-margin blog-sidebar-widget blog-bor am-g ">
+            <h2 class="blog-title"><span>标签榜</span></h2>
+            <div class="am-u-sm-12 blog-clear-padding" v-cloak>
+            <a href="" class="blog-tag" v-for = "tag in tags">{{tag.tag_name}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- content end -->
+
+
+
+  <footer class="blog-footer">
+  <div class="blog-text-center" style="t">© 2021 made by iTXCode</div>     
+  </footer>
+
+
+
+
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="assets/js/amazeui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<script src="editor.md/lib/marked.min.js"></script>
+<script src="editor.md/lib/prettify.min.js"></script>
+<script src="editor.md/lib/raphael.min.js"></script>
+<script src="editor.md/lib/underscore.min.js"></script>
+<script src="editor.md/lib/sequence-diagram.min.js"></script>
+<script src="editor.md/lib/flowchart.min.js"></script>
+<script src="editor.md/lib/jquery.flowchart.min.js"></script>
+<script src="editor.md/editormd.js"></script>
+
+<script>
+    var app = new  Vue({
+        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联
+        data: {
+            //data表示所有需要在页面上动态变化的数据
+            //把js中的数据和界面上的内容关联在一起,数据绑定的过程
+            author: 'iTXCode',
+            blogs: [
+               //获取博客列表
+            ],
+           tags: [
+              //获取标签列表  
+           ],
+           blog: {
+               //点击博客标题进入标签,用来表示当前页面上栈实的博客的详细内容
+               blog_id:null,
+               title:null,
+               content:null,
+               tag_id:null,
+               create_time:null,
+              
+           }
+        },
+        methods: {
+            tag_idtoname(tag_id)
+            {
+                //该函数用来将tag_id转换成tag_name
+                //this访问到当前的app对象
+                //this.tags 就相当于上面定义的标签数组
+                for( var index in this.tags){
+                    //index 表示数组下标
+                    if(this.tags[index].tag_id == tag_id){
+                        return this.tags[index].tag_name;
+                    }
+                    return "默认分类";
+                }
+            },
+          get_blogs(tag_id){
+            var url = '/blog';
+            //获取后端代码的地址:'http://http://121.199.69.125:9093/blog'
+            if(tag_id != null){
+                url = '/blog/?tag_id' + tag_id;
+            }
+
+            //最核心操作,访问http服务器的数据
+            //ajax 原生API特别难用,Vue也提供了API，环境配置很麻烦
+            //此处我们使用JQuery 提供的 API
+            $.ajax({
+                url: url,
+                type: "get",
+                context: this,
+                success:function(data,status){
+                    //data表示响应的body数据
+                    //status表示响应的 状态码
+                    //HTTP请求成功之后执行这个代码.
+                    //在这个代码中更新数据.
+                    //如果不设置context，此时直接使用this.blogs是出错的
+                    //因为此时的this表示当前$ 这样的对象而不是Vue对象
+                    //加上context之后,this就表示context中的值
+                    this.blogs =  data;
+                }
+            })
+        },
+        init(){
+            //1.从服务器上获取tag
+            $.ajax({
+                type: "get",
+                url: "/tag",
+                context: this,
+                success: function (data,status) {
+                    this.tags = data;
+                    //2.从服务器上获取博客
+                    //更建议打家把get_blogs写到回调内部
+                    //因为需要先获取到tag信息,然后才能获取博客列表,
+                    //否则tag_id 和 tag_name 的映射关系没办法建立
+                    this.get_blogs();
+                }
+            })
+            
+        },
+      //点击博客标题的时候获取博客的详细内容
+      get_blog(blog_id){
+        $.ajax({
+          url:'/blog/'+blog_id,
+          type:"get",
+          context:this,
+          success:function(data,status){
+            //此时得到的是blog.content 是 markdown 格式的数据
+            this.blog=data;
+            //把这个markdown 格式的数据转换成html格式的,并显示在界面上
+            testEditormdView = editormd.markdownToHTML("blog_view", {
+                        markdown        : this.blog.content ,//+ "\r\n" + $("#append-test").text(),
+                        //htmlDecode      : true,       // 开启 HTML 标签解析，为了安全性，默认不开启
+                        htmlDecode      : "style,script,iframe",  // you can filter tags decode
+                        //toc             : false,
+                        tocm            : true,    // Using [TOCM]
+                        //tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
+                        //gfm             : false,
+                        //tocDropdown     : true,
+                        // markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+                        emoji           : true,
+                        taskList        : true,
+                        tex             : true,  // 默认不解析
+                        flowChart       : true,  // 默认不解析
+                        sequenceDiagram : true,  // 默认不解析
+                    });
+          }
+
+        })
+      }
+       },
+    });
+
+//初始化的获取数据
+app.init();
+</script>
+</body>
+</html>
