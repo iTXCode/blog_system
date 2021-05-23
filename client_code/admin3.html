@@ -107,14 +107,14 @@
                 
                 <div class="am-form-group">
                     <label for="doc-select-1" style="color: snow;">添加标签</label>
-                    <select id ="province"  v-model="blog.tag_id">
+                    <select id="selects">
                         <option  v-for="tag in tags" :value="tag.tag_id" v-cloak>{{tag.tag_name}}</option>
                     </select>
                     <span class="am-form-caret"></span>
                 </div>
-                <form action="" class="am-form am-form-inline" >
+                <form action="" class="am-form am-form-inline">
                     <div class="am-form-group am-form-icon">
-                        <i class="am-icon-calendar" ></i>
+                        <i class="am-icon-calendar"></i>
                         <input type="text" class="am-form-field" v-model="blog.create_time">
                     </div>
                 </form>
@@ -186,8 +186,7 @@
 
 <script>
     var app = new  Vue({
-        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联let province_;
-        
+        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联
         data: {
             //data表示所有需要在页面上动态变化的数据
             //把js中的数据和界面上的内容关联在一起,数据绑定的过程
@@ -218,8 +217,21 @@
                     if(this.tags[index].tag_id == tag_id){
                         return this.tags[index].tag_name;
                     }
+                    return "默认分类";
                 }
-                return "默认分类";
+            },
+             tag_nameto_id(tag_name)
+            {
+                //该函数用来将tag_id转换成tag_name
+                //this访问到当前的app对象
+                //this.tags 就相当于上面定义的标签数组
+                for( var index in this.tags){
+                    //index 表示数组下标
+                    if(this.tags[index].tag_name == tag_name){
+                        return this.tags[index].tag_id;
+                    }
+                    return "默认分类";
+                }
             },
           get_blogs(tag_id){
             var url = '/blog';
@@ -360,13 +372,17 @@
             update_blog(blog_id){
                 
                 var content = testEditor.getMarkdown();
+                var obj = document.getElementById("selects");
+                var index = obj.selectedIndex;
+                var value = obj.options[index].value;
+
                 var body={
                     //定义的body用来构造更新后的插入内容
                     title:this.blog.title,
                     content:content,
-                    tag_id:this.blog.tag_id,
+                    tag_id:value,
+                    create_time: this.blog.create_time
                 };
-
                 $.ajax({
                     type: "put",
                     url: "/blog/" + blog_id,

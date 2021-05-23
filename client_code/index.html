@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html>
 
@@ -55,7 +56,7 @@
     </div>
      <div class="am-u-md-8 am-u-sm-12" v-show="blog.blog_id!=null">
             <!--先使用editor.md完成markdown 到 html 的转换-->
-          <article id="blog_view" style="color:snow;">
+          <article id="blog_view">
                     
           </article>
       </div> 
@@ -90,11 +91,8 @@
 
 
   <footer class="blog-footer">
-  <div class="blog-text-center" style="t">© 2021 made by iTXCode</div>     
+  <div class="blog-text-center">© 2021 made by iTXCode</div>     
   </footer>
-
-
-
 
 
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -152,8 +150,9 @@
                     if(this.tags[index].tag_id == tag_id){
                         return this.tags[index].tag_name;
                     }
-                    return "默认分类";
+                    
                 }
+                return "默认分类";
             },
           get_blogs(tag_id){
             var url = '/blog';

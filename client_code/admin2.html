@@ -87,7 +87,7 @@
             <!--v-for = " " 循环-->
             <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-img">
             </div>
-            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text" style="float: left;">
+            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text">
                 <span><a href="" class="blog-color">{{tag_idtoname(blog.tag_id)}} &nbsp;</a></span>
                 <span style = "color:snow;"> @{{author}} &nbsp;</span>
                 <span style = "color:snow;">{{blog.create_time}}</span>
@@ -98,26 +98,12 @@
             </div>                 
         </article>
     </div>
-        <div class="am-u-md-8 am-u-sm-12" v-show="blog.blog_id != null" v-cloak>
+         <div class="am-u-md-8 am-u-sm-12" v-show="blog.blog_id != null" v-cloak >
             <div class="am-form">
-                <div class="am-form-group">
-                    <label for="doc-ipt-email-1" style="color:snow;">博客标题</label>
-                    <input type="email" class=""  v-model="blog.title">
-                </div>
-                
-                <div class="am-form-group">
-                    <label for="doc-select-1" style="color: snow;">添加标签</label>
-                    <select id ="province"  v-model="blog.tag_id">
-                        <option  v-for="tag in tags" :value="tag.tag_id" v-cloak>{{tag.tag_name}}</option>
-                    </select>
-                    <span class="am-form-caret"></span>
-                </div>
-                <form action="" class="am-form am-form-inline" >
-                    <div class="am-form-group am-form-icon">
-                        <i class="am-icon-calendar" ></i>
-                        <input type="text" class="am-form-field" v-model="blog.create_time">
-                    </div>
-                </form>
+                 <div class="am-form-group">
+                    <label for="doc-ipt-email-1" style="color: snow;">博客标题</label>
+                    <input type="text" class="" id="doc-ipt-email-1" v-model="blog.title">
+                 </div>
             </div>
           <!--先使用editor.md完成markdown 到 html 的转换-->
           <article id="blog_view">
@@ -146,7 +132,7 @@
         <div class="blog-clear-margin blog-sidebar-widget blog-bor am-g ">
             <h2 class="blog-title"><span>标签榜</span></h2>
             <div class="am-u-sm-12 blog-clear-padding" v-cloak>
-            <a href="" v-for = "tag in tags" class="blog-tag" >{{tag.tag_name}}</a>
+            <a href="" class="blog-tag" v-for = "tag in tags">{{tag.tag_name}}</a>
             </div>
         </div>
     </div>
@@ -156,7 +142,7 @@
 
 
   <footer class="blog-footer">
-  <div class="blog-text-center" style="float: inline-end;">© 2021 made by iTXCode</div>     
+  <div class="blog-text-center">© 2021 made by iTXCode</div>     
   </footer>
 
 
@@ -186,8 +172,7 @@
 
 <script>
     var app = new  Vue({
-        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联let province_;
-        
+        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联
         data: {
             //data表示所有需要在页面上动态变化的数据
             //把js中的数据和界面上的内容关联在一起,数据绑定的过程
@@ -218,8 +203,8 @@
                     if(this.tags[index].tag_id == tag_id){
                         return this.tags[index].tag_name;
                     }
+                    return "默认分类";
                 }
-                return "默认分类";
             },
           get_blogs(tag_id){
             var url = '/blog';
@@ -244,32 +229,6 @@
                     //因为此时的this表示当前$ 这样的对象而不是Vue对象
                     //加上context之后,this就表示context中的值
                     this.blogs =  data;
-                }
-            })
-        },
-           get_tags(tag_id){
-            var url = '/tag';
-            //获取后端代码的地址:'http://http://121.199.69.125:9093/blog'
-            if(tag_id != null){
-                url = '/tag/?tag_id' + tag_id;
-            }
-
-            //最核心操作,访问http服务器的数据
-            //ajax 原生API特别难用,Vue也提供了API，环境配置很麻烦
-            //此处我们使用JQuery 提供的 API
-            $.ajax({
-                url: url,
-                type: "get",
-                context: this,
-                success:function(data,status){
-                    //data表示响应的body数据
-                    //status表示响应的 状态码
-                    //HTTP请求成功之后执行这个代码.
-                    //在这个代码中更新数据.
-                    //如果不设置context，此时直接使用this.blogs是出错的
-                    //因为此时的this表示当前$ 这样的对象而不是Vue对象
-                    //加上context之后,this就表示context中的值
-                    this.tags =  data;
                 }
             })
         },
@@ -364,9 +323,8 @@
                     //定义的body用来构造更新后的插入内容
                     title:this.blog.title,
                     content:content,
-                    tag_id:this.blog.tag_id,
+                    tag_id: this.blog.tag_id
                 };
-
                 $.ajax({
                     type: "put",
                     url: "/blog/" + blog_id,
@@ -383,6 +341,7 @@
             },
               insert_blog(){
                 get_blog(blog_id);
+                
             }
        },
     });
