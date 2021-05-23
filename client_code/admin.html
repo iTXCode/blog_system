@@ -115,7 +115,7 @@
                 <form action="" class="am-form am-form-inline" >
                     <div class="am-form-group am-form-icon">
                         <i class="am-icon-calendar" ></i>
-                        <input type="text" class="am-form-field" v-model="blog.create_time">
+                        <input type="text" class="am-form-field":value="blog.create_time" v-model="blog.create_time">
                     </div>
                 </form>
             </div>
@@ -365,6 +365,7 @@
                     title:this.blog.title,
                     content:content,
                     tag_id:this.blog.tag_id,
+                    create_tmie:this.blog.create_time,
                 };
 
                 $.ajax({

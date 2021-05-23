@@ -1,4 +1,4 @@
-//#include<regex>
+#include<regex>
 #include<string>
 #include<signal.h>
 #include"httplib.h"
@@ -146,10 +146,11 @@ int main(){
       });
 
   //修改某个博客
-   server.Put(R"(/blog/(\d+))",[&blog_table](const Request& req,Response& resp){
+       server.Put(R"(/blog/(\d+))",[&blog_table](const Request& req,Response& resp){
             //1.先获取需要修改的博客id 
             int32_t blog_id = std::stoi(req.matches[1].str());
             printf("修改 id 为 %d 的博客!\n",blog_id);
+
             //2.获取到请求并解析结果
             Json::Reader reader;
             Json::FastWriter writer;
@@ -166,7 +167,7 @@ int main(){
               resp.set_content(writer.write(resp_json),"application/json");
               return ;
             }
-          
+
             //3.校验参数是否符合预期
             if(req_json["title"].empty()
                 || req_json["content"].empty()

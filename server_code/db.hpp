@@ -5,7 +5,7 @@
 #include<cstring>
 #include<memory>
 #include<jsoncpp/json/json.h>
-char tmp[64]={0};
+char tmp[64];
 
 std::string getTime()
 {
@@ -159,7 +159,7 @@ namespace blog_system{
           return true;
         }
 
-         bool Update(const Json::Value& blog){
+        bool Update(const Json::Value& blog){
             
             const std::string& content = blog["content"].asCString();
             //将修改博客的正文进行转义
@@ -168,24 +168,23 @@ namespace blog_system{
 
             
             //核心就是拼接sql语句
-            getTime();
-            printf("time1=%s\n",C_Time.c_str());
             std::unique_ptr<char> sql(new char[content.size()*2 + 4096]);
-            sprintf(sql.get(),"update blog_table set title = '%s',content='%s',tag_id = %d,create_time='%s' where blog_id = %d",
-                blog["title"].asCString(),ptr.get(),blog["tag_id"].asInt(),blog["blog_id"].asInt(),C_Time.c_str());
-            printf("time=2%s\n",C_Time.c_str());
+            sprintf(sql.get(),"update blog_table set title = '%s',content='%s',tag_id = %d where blog_id = %d",
+                blog["title"].asCString(),ptr.get(),blog["tag_id"].asInt(),blog["blog_id"].asInt());
+
             int ret = mysql_query(mysql_,sql.get());
-             printf("time3=%s\n",C_Time);
+
             if(ret != 0)
             {
               printf("更新指定博客失败!%s\n",mysql_error(mysql_));
               return false;
             }
-            printf("time=%s\n",C_Time);
+
             printf("更新博客成功!\n");
             return true;
         }
-        bool Delete(int32_t blog_id){
+
+          bool Delete(int32_t blog_id){
 
             char sql[1024*4]={0};
             sprintf(sql,"delete from blog_table where blog_id=%d",blog_id);
