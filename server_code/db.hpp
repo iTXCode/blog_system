@@ -5,15 +5,7 @@
 #include<cstring>
 #include<memory>
 #include<jsoncpp/json/json.h>
-char tmp[64];
 
-std::string getTime()
-{
-  time_t timep;
-  time (&timep);
-  strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S",localtime(&timep) );
-  return tmp;
-}
 
 namespace blog_system{
     static MYSQL* MySQLInit(){
@@ -169,8 +161,8 @@ namespace blog_system{
             
             //核心就是拼接sql语句
             std::unique_ptr<char> sql(new char[content.size()*2 + 4096]);
-            sprintf(sql.get(),"update blog_table set title = '%s',content='%s',tag_id = %d where blog_id = %d",
-                blog["title"].asCString(),ptr.get(),blog["tag_id"].asInt(),blog["blog_id"].asInt());
+            sprintf(sql.get(),"update blog_table set title = '%s',content='%s',tag_id = %d,create_time='%s' where blog_id = %d",
+                blog["title"].asCString(),ptr.get(),blog["tag_id"].asInt(),blog["create_time"].asCString(),blog["blog_id"].asInt());
 
             int ret = mysql_query(mysql_,sql.get());
 

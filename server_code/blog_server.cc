@@ -3,10 +3,20 @@
 #include<signal.h>
 #include"httplib.h"
 #include"db.hpp"
-#include<cstring>
 
 
 MYSQL* mysql=NULL;
+
+char tmp[64];
+
+std::string getTime()
+{
+  time_t timep;
+  time (&timep);
+  strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S",localtime(&timep) );
+  return tmp;
+}
+
 
 int main(){
   using namespace httplib;
@@ -53,8 +63,7 @@ int main(){
        //2.将解析之后的json格式中的内容进行校验
        if(req_json["title"].empty() 
            || req_json["content"].empty()
-           || req_json["tag_id"].empty()
-           || req_json["create_time"].empty())
+           || req_json["tag_id"].empty())
        {
          printf("请求数据格式有误!%s\n",req.body.c_str());
          //构造一个响应对象,告诉客户端出错了
@@ -66,7 +75,8 @@ int main(){
        }
 
        //3.真正的调用MySQL接口来操作
-       
+       std::string C_Time = getTime();
+       req_json["create_time"] = C_Time.c_str();
        ret = blog_table.Insert(req_json);
 
        if(!ret)
@@ -182,6 +192,8 @@ int main(){
 
             //4.调用数据库操作完成更新博客操作
             req_json["blog_id"] = blog_id;//从path 中得到的 id 设置到 json 对象中
+            std::string C_Time = getTime();
+            req_json["create_time"] = C_Time.c_str();
             ret = blog_table.Update(req_json);
 
             if(!ret)
@@ -323,7 +335,6 @@ int main(){
              resp.set_content(writer.write(resp_json),"application/json");
              return ;
          }
-
 
          //构造正确的返回结果
          resp.set_content(writer.write(resp_json),"application/json");

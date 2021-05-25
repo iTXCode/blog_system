@@ -85,12 +85,12 @@
     </div>
         <div class="am-u-md-8 am-u-sm-12" v-show="blog.blog_id != null" v-cloak>
             <div class="am-form">
-                <div class="am-form-group">
+                <div class="am-form-group" style="width: 150%;">
                     <label for="doc-ipt-email-1" style="color:snow;">博客标题</label>
                     <input type="email" class=""  v-model="blog.title">
                 </div>
                 
-                <div class="am-form-group">
+                <div class="am-form-group" style="width: 150%;">
                     <label for="doc-select-1" style="color: snow;">添加标签</label>
                     <select id ="province"  v-model="blog.tag_id">
                         <option  v-for="tag in tags" :value="tag.tag_id" v-cloak>{{tag.tag_name}}</option>
