@@ -57,8 +57,11 @@
         <span    :value="tag.tag_id" style = "color:snow;"> {{tag.tag_name}} &nbsp;</span>
         
             <button type="button" class="am-btn am-btn-danger am-round" v-on:click="delete_tag(tag.tag_id)">删除</button>
+            <div>
+                <input type="email" class=""  v-model="tag.tag_name" placeholder="如需要修改标签请输入">
+                <button    type="button" class="am-btn am-btn-success am-round" v-on:click="update_tag(tag.tag_id,tag.tag_name)">修改</button>
+            </div>
             
-            <button :value="tag.tag_id"  onclick="ck();" type="button" class="am-btn am-btn-success am-round">编辑</button>
     </article>
         <div class="am-u-md-8 am-u-sm-12" v-cloak>
             <div class="am-form">
@@ -103,28 +106,6 @@
 
 
 <script>
-  var ck = function(){
-        var x = prompt ("输入修改后的名称:", "Tom");/*第一个变量为提示语，第二个变量为默认初始值*/
-        alert(x);
-        var body={
-            url:"/tag/" + this.tag.tag_id,
-            tag_name:this.tag.tag_name,
-        };
-        
-        $.ajax({
-            type:"get",
-            url:url,
-            data: JSON.stringify(body),
-            contentType: 'application/json;charset=utf-8',
-            context: this,
-            sucess:function(data,status){
-                alert("标题修改成功！");
-            }
-        })
-       
-    }
-   
-
 
     var app = new  Vue({
         el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联let province_;
@@ -239,14 +220,14 @@
                     }
                 })
             },
-            update_tag(tag_id){
+            update_tag(tag_id,tag_name){
                 var url="/tag/"+tag_id;
                 var body={
-                    tag_name:this.tag.tag_name,
+                    tag_name:tag_name,
                 }
 
                 $.ajax({
-                    type: "update",
+                    type: "put",
                     url: url,
                     data: JSON.stringify(body),
                     contentType: 'application/json;charset=utf-8',
