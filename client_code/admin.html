@@ -46,21 +46,6 @@
       <li class="am-dropdown" data-am-dropdown>
       </li>
     </ul>
-
-    <div class="am-topbar-right">
-      <div class="am-dropdown" data-am-dropdown="{boundary: '.am-topbar'}">
-        <button class="am-btn am-btn-secondary am-topbar-btn am-btn-sm am-dropdown-toggle" data-am-dropdown-toggle>其他 <span class="am-icon-caret-down"></span></button>
-        <ul class="am-dropdown-content">
-          <li><a href="#">注册</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="am-topbar-right">
-     <a href="/client_code/login.html">
-        <button class="am-btn am-btn-primary am-topbar-btn am-btn-sm" v-on:click="href=/client_code/login.html">登录</button>
-     </a>
-    </div>
   </div>
 </header>
 
@@ -73,7 +58,7 @@
             <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-img">
             </div>
             <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text" style="float: left;">
-                <span><a href="" class="blog-color">{{tag_idtoname(blog.tag_id)}} &nbsp;</a></span>
+                <span><a href="#" class="blog-color">{{tag_idtoname(blog.tag_id)}} &nbsp;</a></span>
                 <span style = "color:snow;"> @{{author}} &nbsp;</span>
                 <span style = "color:snow;">{{blog.create_time}}</span>
                 <!--其中的v-on:click 把当前的html 标签关联上一个鼠标点击事件-->
@@ -100,7 +85,7 @@
                 <form action="" class="am-form am-form-inline" >
                     <div class="am-form-group am-form-icon">
                         <i class="am-icon-calendar" ></i>
-                        <input type="text" class="am-form-field":value="blog.create_time" v-model="blog.create_time">
+                        <input type="text" class="am-form-field":value="blog.create_time" disabled >
                     </div>
                 </form>
             </div>
@@ -108,8 +93,12 @@
           <article id="blog_view">
                <textarea>{{blog.content}}</textarea>
           </article>
-          <button type="button" class="am-btn am-btn-success am-round" v-on:click="update_blog(blog.blog_id)">发布博客</button>
+          <a href="/client_code/admin.html">
+            <button type="button" class="am-btn am-btn-success am-round" v-on:click="update_blog(blog.blog_id)">发布博客</button>
+          </a>
+          <a href="/client_code/admin.html"></a>
           <button type="button" class="am-btn am-btn-success am-round" v-on:click="back()">返回</button>
+            </a>
         </div> 
     <div class="am-u-md-4 am-u-sm-12 blog-sidebar" v-show="blog.blog_id == null">
         <div class="blog-sidebar-widget blog-bor " v-cloak>
@@ -131,7 +120,10 @@
         <div class="blog-clear-margin blog-sidebar-widget blog-bor am-g ">
             <h2 class="blog-title"><span>标签榜</span></h2>
             <div class="am-u-sm-12 blog-clear-padding" v-cloak>
-            <a href="" v-for = "tag in tags" class="blog-tag" >{{tag.tag_name}}</a>
+            <a href="#" v-on:click="get_tag_blogs(tag.tag_id)" v-for = "tag in tags" class="blog-tag" >{{tag.tag_name}}</a>
+            <a href="/client_code/add_tag.html">
+                <button type="button" class="am-btn am-btn-success am-round"  >标签管理</button>
+            </a>
             </div>
         </div>
     </div>
@@ -229,6 +221,31 @@
                     //因为此时的this表示当前$ 这样的对象而不是Vue对象
                     //加上context之后,this就表示context中的值
                     this.blogs =  data;
+                }
+            })
+        },
+        get_tag_blogs(tag_id){
+            var url = '/blogs/' + tag_id;
+            //获取后端代码的地址:'http://http://121.199.69.125:9093/blog'
+
+            //最核心操作,访问http服务器的数据
+            //ajax 原生API特别难用,Vue也提供了API，环境配置很麻烦
+            //此处我们使用JQuery 提供的 API
+            $.ajax({
+                url: url,
+                type: "get",
+                context: this,
+                
+                success:function(data,status){
+                    //data表示响应的body数据
+                    //status表示响应的 状态码
+                    //HTTP请求成功之后执行这个代码.
+                    //在这个代码中更新数据.
+                    //如果不设置context，此时直接使用this.blogs是出错的
+                    //因为此时的this表示当前$ 这样的对象而不是Vue对象
+                    //加上context之后,this就表示context中的值
+                    this.blogs =  data;
+                    alert("查询某类博客成功!");
                 }
             })
         },
@@ -340,7 +357,7 @@
                 })
             },
             back(){
-                this.blog={};
+                window.location.href='admin.html';
             },
             update_blog(blog_id){
                 
@@ -366,7 +383,7 @@
                         this.back();
                     }
                 })
-            }
+            },
        },
     });
 

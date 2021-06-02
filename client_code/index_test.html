@@ -69,7 +69,7 @@
                 <span style = "color:snow;"> @{{author}} &nbsp;</span>
                 <span style = "color:snow;">{{blog.create_time}}</span>
                 <!--其中的v-on:click 把当前的html 标签关联上一个鼠标点击事件-->
-                    <h1><a href="#"  style = "color:snow;" v-on:click="get_blog(blog.blog_id)">{{blog.title}}</a></h1>
+                    <h1><a href="#"  style = "color:snow;" v-on:click="get_blog(blog.blog_id) ">{{blog.title}}</a></h1>
                 <p><a href="" class="blog-continue">continue reading</a></p>
             </div>                 
         </article>
@@ -79,8 +79,13 @@
           <article  id="blog_view">
     
           </article>
-          <a href="/client_code/index.html">
-            <button type="button" class="am-btn am-btn-success am-round" v-show="blog.blog_id!=null"  v-on:click="back()" v-cloak>返回</button>
+          <div class="am-form-group" style="width: 150%;" v-show="blog.blog_id!=null">
+            <label for="doc-ipt-email-1" style="color:snow; ">发表评论</label>
+            <input type="email" class=""  v-model="comment.comment" >
+          </div>
+      
+          <a href="/client_code/index_test.html">
+            <button class="am-btn am-btn-secondary" type="submit" v-on:click="insert_comment(blog.blog_id)" v-show="blog.blog_id!=null">提交</button>
           </a>
       </div> 
 
@@ -152,6 +157,9 @@
            tags: [
               //获取标签列表  
            ],
+           comments:[
+
+           ],
            blog: {
                //点击博客标题进入标签,用来表示当前页面上栈实的博客的详细内容
                blog_id:null,
@@ -160,6 +168,12 @@
                tag_id:null,
                create_time:null,
               
+           },
+           comment:{
+                comment_id:null,
+                blog_id:null,
+                comment:null,
+                comment_time:null,
            }
         }, 
         methods: {
@@ -233,24 +247,29 @@
             })
         },
         init(){
+          this.get_blogs();
             //1.从服务器上获取tag
             $.ajax({
                 type: "get",
                 url: "/tag",
+                async:false,
                 context: this,
+               
                 success: function (data,status) {
                     this.tags = data;
                     //2.从服务器上获取博客
                     //更建议打家把get_blogs写到回调内部
                     //因为需要先获取到tag信息,然后才能获取博客列表,
                     //否则tag_id 和 tag_name 的映射关系没办法建立
-                    this.get_blogs();
+                    
                 }
             })
             
         },
+       
       //点击博客标题的时候获取博客的详细内容
       get_blog(blog_id){
+          
         $.ajax({
           url:'/blog/'+blog_id,
           type:"get",
@@ -278,8 +297,46 @@
           },
 
         })
+        
         this.blog.content=null;
+        
       },
+
+            insert_comment(blog_id){
+                var body={
+                    blog_id:blog_id,
+                    comment:this.comment.comment,
+                    comment_time:null,
+                }
+                $.ajax({
+                    url:"/comments",
+                    type:"post",
+                    data: JSON.stringify(body),
+                    contentType: 'application/json;charset=utf-8',
+                    context: this,
+                    success:function(data,status)
+                    {
+                        alert("发布成功");
+                    }
+                })
+                
+            },
+            show_comment(blog_id){
+                $.ajax({
+                    url:"/comment/" + blog_id,
+                    type:"get",
+                    async:false,
+                    context: this,
+                    success:function(data,status)
+                    {
+                        
+                        alert("发布成功");
+                        this.comments=data;
+                    }
+                })
+                
+            },
+            
        },
     });
 

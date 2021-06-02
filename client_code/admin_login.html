@@ -7,7 +7,7 @@
   <meta name="keywords" content="">
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>LOG-IN | Amaze UI Examples</title>
+  <title>iTXCode</title>
 
   <!-- Set render engine for 360 browser -->
   <meta name="renderer" content="webkit">
@@ -15,29 +15,30 @@
   <!-- No Baidu Siteapp-->
   <meta http-equiv="Cache-Control" content="no-siteapp"/>
 
-  <link rel="icon" type="image/png" href="{{assets}}i/favicon.png">
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
 
   <!-- Add to homescreen for Chrome on Android -->
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="icon" sizes="192x192" href="{{assets}}i/app-icon72x72@2x.png">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
 
   <!-- Add to homescreen for Safari on iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <meta name="apple-mobile-web-app-title" content="iTXCode"/>
   <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
 
   <!-- Tile icon for Win8 (144x144 + tile color) -->
   <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
   <meta name="msapplication-TileColor" content="#0e90d2">
+  
 
   <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
   <!--
   <link rel="canonical" href="http://www.example.com/">
   -->
-
   <link rel="stylesheet" href="assets/css/amazeui.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
 <body>
 <header>
@@ -45,9 +46,9 @@
       <h1><a href="/">iTXCode</a> </h1>
   </div>    
   <div class="log-re">
-    <a href="/client_code/user_login.html">
-      <button type="button" class="am-btn am-btn-default am-radius log-button">登 录</button>
-    </a>
+   <a href="/client_code/lw-re.html">
+    <button type="button" class="am-btn am-btn-default am-radius log-button">注册</button>
+   </a>
   </div> 
 </header>
 
@@ -56,20 +57,18 @@
   <div class="am-u-lg-3 am-u-md-6 am-u-sm-8 am-u-sm-centered log-content">
     <h1 class="log-title am-animation-slide-top">iTXCode</h1>
     <br>
-    <form class="am-form" id="log-form" >
+    <form class="am-form" id="log-form">
       <div class="am-input-group am-radius am-animation-slide-left">       
-        <input type="text" id="doc-vld-email-2-1" class="am-radius" data-validation-message="请输入正确的账号" placeholder="账号"  v-model="user.user_name"/>
+        <input type="text" id="doc-vld-email-2-1" class="am-radius" data-validation-message="请输入正确的账号" placeholder="账号" v-model="user.user_name"/>
         <span class="am-input-group-label log-icon am-radius"><i class="am-icon-user am-icon-sm am-icon-fw"></i></span>
       </div>      
       <br>
       <div class="am-input-group am-animation-slide-left log-animation-delay">       
-        <input type="password" class="am-form-field am-radius log-input" placeholder="密码" minlength="8" required v-model="user.user_password">
+        <input type="password" class="am-form-field am-radius log-input" v-model="user.user_password" placeholder="密码" minlength="8"  required >
         <span class="am-input-group-label log-icon am-radius"><i class="am-icon-lock am-icon-sm am-icon-fw"></i></span>
       </div>      
       <br>
-
-      <button type="submit" class="am-btn am-btn-primary am-btn-block am-btn-lg am-radius am-animation-slide-bottom log-animation-delay-b" v-on:click="insert_user()">注 册</button>
-
+      <button type="button" class="am-btn am-btn-primary am-btn-block am-btn-lg am-radius am-animation-slide-bottom log-animation-delay" v-on:click="login_user()">登 录</button>
     </form>
   </div>
   </div>
@@ -88,8 +87,7 @@
 <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
 <script src="assets/js/amazeui.ie8polyfill.min.js"></script>
 <![endif]-->
-<!--<script src="assets/js/amazeui.min.js"></script>
-<script src="assets/js/app.js"></script>--->
+
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script>
   var app = new Vue({
@@ -105,24 +103,26 @@
     },
     methods:{
       //用户注册函数,条用插入数据库操作
-      insert_user(){
+      login_user(){
         var body={
           user_name: this.user.user_name,
           user_password: this.user.user_password,
         };
         $.ajax({
           type:"post",
-          url:"/user",
+          url:"/users",
           async:false,
           data:JSON.stringify(body),
+          
           contentType: 'application/json;charsert=utf-8',
-          context: this,
+          context:this,
+         
           success:function(data,status){
-            alert("用户注册成功,请登录.");
-            window.location.href='user_login.html';
-          }
-        })
-
+            alert("管理员登录成功!");
+            window.location.href='admin.html';
+          },
+          
+        });
       },
     }
   });

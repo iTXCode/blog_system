@@ -87,7 +87,8 @@ namespace blog_system{
             }
             else
             {  
-                sprintf(sql,"select blog_id,title,tag_id,create_time from blog_table where tag_id = %d", std::stoi(tag_id));
+                sprintf(sql,"select blog_id,title,tag_id,create_time from blog_table where tag_id = %d limit 3", std::stoi(tag_id));
+                printf("显示tag_id = %d 的博客",std::stoi(tag_id));
             } 
             
             int ret = mysql_query(mysql_,sql);
@@ -121,6 +122,47 @@ namespace blog_system{
             return true;
         }
 
+          bool SelectAKind(Json::Value* blogs,const std::string& tag_id ="1"){
+            
+            char sql[1024*4]={0};
+            
+           
+            sprintf(sql,"select blog_id,title,tag_id,create_time from blog_table where tag_id = %d", std::stoi(tag_id));
+            printf("显示tag_id = %d 的博客",std::stoi(tag_id));
+            
+            
+            int ret = mysql_query(mysql_,sql);
+            
+            if(ret != 0)
+            {
+              printf("查询所有博客失败%s\n",mysql_error(mysql_));
+              return false;
+            }
+
+
+            MYSQL_RES* result = mysql_store_result(mysql_);
+            int rows = mysql_num_rows(result);
+            
+            for(int i=0;i<rows ;++i)
+            {
+              MYSQL_ROW row  = mysql_fetch_row(result);
+
+              Json::Value blog;
+
+              blog["blog_id"] = atoi(row[0]);
+              //atoi 将C风格的字符串转换成数字
+              blog["title"] = row[1];
+              blog["tag_id"] =  atoi(row[2]);
+              blog["create_time"] = row[3];
+              blogs->append(blog);
+            }
+
+            mysql_free_result(result);
+            printf("执行查找所有博客成功! 一共查找到%d 条博客!\n",rows);
+            return true;
+        }
+
+
         bool SelectOne(int32_t blog_id, Json::Value* blog){
           
           char sql[1024*4]={0};
@@ -148,6 +190,7 @@ namespace blog_system{
           (*blog)["tag_id"] = atoi(row[3]);
           (*blog)["create_time"] = row[4];
           printf("执行查找单个博客成功!\n");
+          mysql_free_result(result);
           return true;
         }
 
@@ -235,11 +278,60 @@ namespace blog_system{
           return true;
         }
 
+        //修改某个标签
+        bool Update_tag(int32_t tag_id, const Json::Value& tag){
+            
+           char sql[1024*4]={0};
+            //将修改博客的正文进行转义
+            
+            
+            //核心就是拼接sql语句
+          
+            sprintf(sql,"update tag_table set tag_name='%s' where tag_id = %d",tag["tag_name"].asCString(),tag_id);
+
+            int ret = mysql_query(mysql_,sql);
+
+            if(ret != 0)
+            {
+              printf("更新指定标签失败!%s\n",mysql_error(mysql_));
+              return false;
+            }
+
+            printf("更新标签成功!\n");
+            return true;
+        }
+
+
+        //查看某个标签
+        bool SelectOne(int32_t tag_id,Json::Value* tag){
+            char sql[1024*4]={0};
+            sprintf(sql,"select tag_id,tag_name from tag_table where tag_id=%d",tag_id);
+
+            int ret = 0;
+            ret =  mysql_query(mysql_,sql);
+
+            if(ret != 0){
+              printf("查询单个标签失败!\n",mysql_error(mysql_));
+              return false;
+            }
+
+            MYSQL_RES * result =mysql_store_result(mysql_);
+
+            MYSQL_ROW row = mysql_fetch_row(result);
+            (*tag)["tag_id"] = atoi(row[0]);
+            (*tag)["tag_name"] =  row[1];
+             mysql_free_result(result);
+
+            printf("查找某个标签成功!");
+            return true;
+        }
+
         bool SelectAll(Json::Value* tags){
           char sql[1024*4]={0};
           sprintf(sql,"select tag_id,tag_name from tag_table");
 
-          int ret = mysql_query(mysql_,sql);
+          int ret = 0;
+          ret =  mysql_query(mysql_,sql);
           if(ret != 0)
           {
             printf("查找所有标签失败!%s\n",mysql_error(mysql_));
@@ -259,10 +351,191 @@ namespace blog_system{
             tag["tag_name"] = row[1];
             tags->append(tag);
           }
-
+          mysql_free_result(result);    
           printf("查看所有标签成功!\n");
           return true;
         }
+      private:
+        MYSQL* mysql_;
+    };
+
+    class User_table{
+      public:
+
+        User_table(MYSQL* mysql)
+        :mysql_(mysql)
+        {
+
+        }
+        bool Insert(const Json::Value& user_info){
+            char sql[1024*4];
+            sprintf(sql,"insert into user_table values(null,'%s','%s')",user_info["user_name"].asCString(),user_info["user_password"].asCString());
+
+            int ret = mysql_query(mysql_,sql);
+
+            if( ret != 0)
+            {
+              printf("用户注册失败! %s\n",mysql_error(mysql_));
+              return false;
+            }
+
+            printf("用户注册成功!\n");
+            return true;
+        }
+
+        bool SelectOne(const Json::Value& user_info){
+          //用户登录
+          
+          char sql[1024*4];
+          sprintf(sql,"select user_name,user_password from user_table where user_name='%s' and user_password ='%s'",user_info["user_name"].asCString(),user_info["user_password"].asCString());
+         
+          int ret = mysql_query(mysql_,sql);
+         
+          
+          if(!ret){
+            printf("没有该用户%s\n",mysql_error(mysql_));
+            return false;
+          }
+          MYSQL_RES* result = mysql_store_result(mysql_);
+          mysql_free_result(result);    
+          printf("用户登录成功\n");
+          return true;
+        }
+
+
+
+      private:
+      MYSQL* mysql_;
+    };
+
+     class Comment_Table{
+      public:
+        Comment_Table(MYSQL* mysql)
+          :mysql_(mysql)
+        {
+
+        }
+
+        bool Insert(const Json::Value& comment){
+          char sql[1024*4]={0};
+          sprintf(sql,"insert into comment_table values(null,%d,'%s','%s')",comment["blog_id"].asInt(),
+          comment["comment"].asCString(),comment["comment_time"].asCString());
+
+          int ret = mysql_query(mysql_,sql);
+
+          if(ret !=0 )
+          {
+            printf("插入评论失败%s\n",mysql_error(mysql_));
+            return false;
+          }
+
+          printf("插入评论成功!\n");
+          return true;
+        }
+
+        bool Delete(int32_t comment_id){
+          char sql[1024*4]={0};
+          sprintf(sql,"delete from comment_table where comment_id=%d",comment_id);
+
+          int ret = mysql_query(mysql_,sql);
+          if(ret != 0)
+          {
+            printf("删除评论失败!%s\n",mysql_error(mysql_));
+            return false;
+          }
+
+          printf("删除评论成功!\n");
+          return true;
+        }
+
+        //查看某个标签
+        bool SelectOne(int32_t blog_id,Json::Value* comments){
+            char sql[1024*4]={0};
+          
+            sprintf(sql,"select comment_id,comment,comment_time from comment_table where blog_id = %d ", blog_id);
+             printf("显示blog_id = %d 的博客",blog_id);
+          
+            
+            int ret = 0;
+            ret = mysql_query(mysql_,sql);
+            
+            if(ret != 0)
+            {
+              printf("查询所有评论失败%s\n",mysql_error(mysql_));
+              return false;
+            }
+
+
+            MYSQL_RES* result = mysql_store_result(mysql_);
+            if(result==nullptr){
+              printf("该博客没有任何的评论记录!\n");
+              return false;
+            }
+
+            int rows = mysql_num_rows(result);
+            
+            for(int i=0;i<rows ;++i)
+            {
+              MYSQL_ROW row  = mysql_fetch_row(result);
+
+              Json::Value Comment;
+
+              Comment["comment_id"] = atoi(row[0]);
+              //atoi 将C风格的字符串转换成数字
+              Comment["comment"] =  atoi(row[2]);
+              Comment["comment_time"] = row[3];
+              comments->append(Comment);
+            }
+
+            mysql_free_result(result);
+            printf("执行查找所有博客成功! 一共查找到%d 条博客!\n",rows);
+            return true;
+        }
+
+          bool SelectAll(Json::Value* comments){
+            
+            char sql[1024*4]={0};
+          
+            sprintf(sql,"select comment_id,comment,comment_time from comment_table");
+          
+            
+            int ret = 0;
+            ret = mysql_query(mysql_,sql);
+            
+            if(ret != 0)
+            {
+              printf("查询所有评论失败%s\n",mysql_error(mysql_));
+              return false;
+            }
+
+
+            MYSQL_RES* result = mysql_store_result(mysql_);
+            if(result==nullptr){
+              printf("没有任何的评论记录!\n");
+              return false;
+            }
+
+            int rows = mysql_num_rows(result);
+            
+            for(int i=0;i<rows ;++i)
+            {
+              MYSQL_ROW row  = mysql_fetch_row(result);
+
+              Json::Value Comment;
+
+              Comment["comment_id"] = atoi(row[0]);
+              //atoi 将C风格的字符串转换成数字
+              Comment["comment"] =  row[1];
+              Comment["comment_time"] = row[2];
+             comments->append(Comment);
+            }
+
+            mysql_free_result(result);
+            printf("执行查找所有博客成功! 一共查找到%d 条博客!\n",rows);
+            return true;
+        }
+
+      
       private:
         MYSQL* mysql_;
     };
