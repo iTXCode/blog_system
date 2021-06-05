@@ -339,8 +339,9 @@ namespace blog_system{
           }
 
           MYSQL_RES* result = mysql_store_result(mysql_);
-
-          int rows = mysql_num_rows(result);
+          int rows = 0 ;
+          if(result!=nullptr)
+             rows = mysql_num_rows(result);
           //获取查找结果的行数
           
           for(int i=0;i<rows;++i)
@@ -379,6 +380,8 @@ namespace blog_system{
               return false;
             }
 
+            MYSQL_RES* result = mysql_store_result(mysql_);
+            mysql_free_result(result);   
             printf("用户注册成功!\n");
             return true;
         }
@@ -428,6 +431,7 @@ namespace blog_system{
             printf("插入评论失败%s\n",mysql_error(mysql_));
             return false;
           }
+          
 
           printf("插入评论成功!\n");
           return true;
@@ -482,8 +486,8 @@ namespace blog_system{
 
               Comment["comment_id"] = atoi(row[0]);
               //atoi 将C风格的字符串转换成数字
-              Comment["comment"] =  atoi(row[2]);
-              Comment["comment_time"] = row[3];
+              Comment["comment"] =  row[1];
+              Comment["comment_time"] = row[2];
               comments->append(Comment);
             }
 
@@ -532,6 +536,134 @@ namespace blog_system{
 
             mysql_free_result(result);
             printf("执行查找所有博客成功! 一共查找到%d 条博客!\n",rows);
+            return true;
+        }
+
+      
+      private:
+        MYSQL* mysql_;
+    };
+
+
+//用来实现留言功能
+
+class Message_Table{
+      public:
+        Message_Table(MYSQL* mysql)
+          :mysql_(mysql)
+        {
+
+        }
+
+        bool Insert(const Json::Value& message){
+          char sql[1024*4]={0};
+          sprintf(sql,"insert into message_table values(null,'%s','%s')",
+          message["message_content"].asCString(),message["message_time"].asCString());
+
+          int ret = mysql_query(mysql_,sql);
+
+          if(ret !=0 )
+          {
+            printf("插入留言失败%s\n",mysql_error(mysql_));
+            return false;
+          }
+
+          printf("插入留言成功!\n");
+          return true;
+        }
+
+        bool Delete(int32_t message_id){
+          char sql[1024*4]={0};
+          sprintf(sql,"delete from message_table where message_id=%d",message_id);
+
+          int ret = mysql_query(mysql_,sql);
+          if(ret != 0)
+          {
+            printf("删除评论失败!%s\n",mysql_error(mysql_));
+            return false;
+          }
+
+          printf("删除评论成功!\n");
+          return true;
+        }
+
+        //查看某个标签
+        bool SelectOne(int32_t message_id,Json::Value* messages){
+            char sql[1024*4]={0};
+          
+            sprintf(sql,"select message_id,message_content,message_time from message_table where message_id = %d ", message_id);
+          
+            
+            int ret = 0;
+            ret = mysql_query(mysql_,sql);
+            
+            if(ret != 0)
+            {
+              printf("查询某个留言失败%s\n",mysql_error(mysql_));
+              return false;
+            }
+
+
+            MYSQL_RES* result = mysql_store_result(mysql_);
+            if(result==nullptr){
+              printf("没有任何的留言!\n");
+              return false;
+            }
+
+              Json::Value Message;
+              MYSQL_ROW row  = mysql_fetch_row(result);
+              Message["message_id"] = atoi(row[0]);
+              //atoi 将C风格的字符串转换成数字
+              Message["message_content"] =  row[1];
+              Message["message_time"] = row[2];
+              messages->append(Message);
+            
+
+            mysql_free_result(result);
+           printf("查询某条留言成功\n");
+            return true;
+        }
+
+          bool SelectAll(Json::Value* messages){
+            
+            char sql[1024*4]={0};
+          
+            sprintf(sql,"select message_id,message_content,message_time from message_table");
+          
+            
+            int ret = 0;
+            ret = mysql_query(mysql_,sql);
+            
+            if(ret != 0)
+            {
+              printf("查询所有留言失败%s\n",mysql_error(mysql_));
+              return false;
+            }
+
+
+            MYSQL_RES* result = mysql_store_result(mysql_);
+            if(result==nullptr){
+              printf("没有任何的留言记录!\n");
+              return false;
+            }
+
+            int rows = mysql_num_rows(result);
+            
+            for(int i=0;i<rows ;++i)
+            {
+              MYSQL_ROW row  = mysql_fetch_row(result);
+
+              Json::Value Message;
+
+              Message["message_id"] = atoi(row[0]);
+              //atoi 将C风格的字符串转换成数字
+              Message["message_content"] =  row[1];
+              Message["message_time"] = row[2];
+              messages->append(Message);
+            }
+
+            mysql_free_result(result);
+            printf("执行查找所有留言成功! 一共查找到%d 条留言!\n",rows);
             return true;
         }
 

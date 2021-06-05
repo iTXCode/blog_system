@@ -30,6 +30,7 @@ int main(){
   Tag_Table tag_table(mysql);
   User_table user_table(mysql);
   Comment_Table comment_table(mysql);
+  Message_Table message_table(mysql);
 
   //3.创建服务器,并设置"路由"
   //HTTP服务器中的路由,和IP协议的路由不一样
@@ -662,6 +663,139 @@ int main(){
       return ;
       });
 
+
+
+//留言板块
+
+       server.Post("/message",[&message_table](const Request& req,Response& resp){
+         printf("插入留言!\n");
+         
+         Json::FastWriter writer;
+         Json::Reader reader;
+         Json::Value resp_json;
+         Json::Value req_json;
+
+         //1.解析请求
+
+         bool  ret = reader.parse(req.body,req_json);
+
+         if(!ret){
+           printf("插入留言解析失败!\n");
+           resp_json["ok"] = false;
+           resp_json["reason"] ="insert message rep parse failed!";
+           resp.status =500;
+           return;
+         }
+
+         //2.对请求进行校验
+         if( req_json["message_content"].empty()){
+           printf("校验过程有误!\n");
+           resp_json["ok"] = false;
+           resp_json["reason"] ="insert message null";
+           resp.status = 400;
+           resp.set_content(writer.write(resp_json),"application/json");
+           return ;
+         }
+
+         //3.调用数据库操作函数来完成该功能实现
+        std::string C_Time = getTime();
+        req_json["message_time"] = C_Time.c_str();
+      
+         ret = message_table.Insert(req_json);
+
+         if(!ret){
+           printf("该功能数据库操作有误!\n");
+           resp_json["ok"] = false;
+           resp_json["reason"] = "insert message failed!";
+           resp.status =400;
+           resp.set_content(writer.write(resp_json),"application/json");
+           return;
+         }
+
+         //构造一个争取的返回结果
+         resp_json["ok"] = true;
+         resp.set_content(writer.write(resp_json),"application/json");
+         return ;
+       }); 
+
+//查看某个留言
+        server.Get(R"(/message/(\d+))",[&message_table](const Request& req,Response& resp){
+          //1.解析获得的tag_id
+
+          int32_t message_id = std::stoi(req.matches[1].str());
+          printf("查询 message_id = %d 的留言\n",message_id);
+
+          //2.直接条用数据库操作
+          Json::Value resp_json;
+          Json::FastWriter writer;
+          bool ret = message_table.SelectOne(message_id,&resp_json);
+
+          if(!ret){
+            //这里是调用数据库操作失败
+            resp_json["ok"] = false;
+            resp_json["reason"] = "select one message failed!";
+            resp.status = 404;
+            resp.set_content(writer.write(resp_json),"application/json");
+            return;
+          }
+
+          //3.包装一个正确的返回结果
+          resp_json["ok"]=true;
+          resp.set_content(writer.write(resp_json),"application/json");
+          return;
+        });
+
+
+//查看所有留言
+    server.Get("/messages",[&message_table](const Request& req,Response& resp){
+        
+      printf("查看所有留言!\n");
+      //1.尝试获取 tag_id ,如果 tag_id 这个参数不存在,
+      //  返回空字符串
+      // 获取解析结果中的tag_id
+      //都不需解析请求的时候,也就不需要合法判定了
+      //2.调用数据库操作来获取所有博客结果
+       Json::FastWriter writer;
+       Json::Value resp_json; 
+      
+      bool ret = message_table.SelectAll(&resp_json);
+      if(!ret)
+      {
+        resp_json["ok"] = false;
+        resp_json["reason"] = "select all message failed!";
+        resp.status = 500;
+        resp.set_content(writer.write(resp_json),"application/json");
+        return ;
+      }
+    
+      //3.查询成功了就构造一个成功的结果返回
+      resp.status=200;
+      resp.set_content(writer.write(resp_json),"application/json");
+      return ;
+      });
+
+
+      server.Delete(R"(/message/(\d+))",[&message_table](const Request& req,Response& resp){
+        int32_t message_id = std::stoi(req.matches[1].str());
+
+          Json::Value resp_json;
+          Json::FastWriter writer;
+          bool ret = message_table.Delete(message_id);
+
+          if(!ret){
+            //这里是调用数据库操作失败
+            resp_json["ok"] = false;
+            resp_json["reason"] = "select one message failed!";
+            resp.status = 404;
+            resp.set_content(writer.write(resp_json),"application/json");
+            return;
+          }
+
+          //3.包装一个正确的返回结果
+          resp.status=200;
+          resp.set_content(writer.write(resp_json),"application/json");
+          return;
+      });
 
      
   server.set_base_dir("./xroot");

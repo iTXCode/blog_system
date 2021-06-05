@@ -1,0 +1,155 @@
+
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>blog</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="editor.md/css/editormd.css" />
+
+
+<!--style 标签中写的就是css-->
+<style>
+    [v-cloak]{
+        display: none;
+    }
+</style>
+</head>
+
+<body id="blog">
+<header class="am-topbar">
+  <h1 class="am-topbar-brand">
+    <a href="#">iTXCode</a>
+  </h1>
+
+  <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+  <div class="am-collapse am-topbar-collapse" id="doc-topbar-collapse">
+    <ul class="am-nav am-nav-pills am-topbar-nav">
+      <li class="am-active"><a href="/client_code/index_test.html">首页</a></li>
+      <li class="am-dropdown" data-am-dropdown>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<!-- content srart -->
+<div class="am-g am-g-fixed blog-fixed" id="app">
+    
+            <!--先使用editor.md完成markdown 到 html 的转换-->
+        <div id="test-editormd">
+            <textarea placeholder="请输入博客内容" name="content" style="display: none">请书写留言内容</textarea>
+        </div>
+        <div>
+            <button type="button" class="am-btn am-btn-success am-round" v-on:click="insert_message()" v-cloak>发布留言</button>
+        </div>
+</div>
+<!-- content end -->
+
+
+
+  <footer class="blog-footer">
+  <div class="blog-text-center">© 2021 made by iTXCode</div>     
+  </footer>
+
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="assets/js/amazeui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<script src="editor.md/lib/marked.min.js"></script>
+<script src="editor.md/lib/prettify.min.js"></script>
+<script src="editor.md/lib/raphael.min.js"></script>
+<script src="editor.md/lib/underscore.min.js"></script>
+<script src="editor.md/lib/sequence-diagram.min.js"></script>
+<script src="editor.md/lib/flowchart.min.js"></script>
+<script src="editor.md/lib/jquery.flowchart.min.js"></script>
+<script src="editor.md/editormd.js"></script>
+
+<script type="text/javascript">
+
+    var testEditor;
+
+        $(function() {
+                   testEditor = editormd("test-editormd", {
+                       width   : "100%",
+                       height  : "700px",
+                       syncScrolling : "single",
+                       path    : "editor.md/lib/"
+                   });
+               }); 
+</script>
+
+<script>
+    var app = new  Vue({
+        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联
+        data: {
+            //data表示所有需要在页面上动态变化的数据
+            //把js中的数据和界面上的内容关联在一起,数据绑定的过程
+            author: 'iTXCode',
+            messages: [
+               //获取博客列表
+            ],
+          
+            message: {
+               //点击博客标题进入标签,用来表示当前页面上栈实的博客的详细内容
+               message_id:null,
+               message_content:null,
+               message_time:null,
+           }
+        }, 
+        methods: {
+           insert_message(){
+            var content = testEditor.getMarkdown();
+                var body={
+                    //定义的body用来构造更新后的插入内容
+                    message_content:content,
+                    message_tmie:null,
+                };
+
+                $.ajax({
+                    type: "post",
+                    url: "/message",
+                    data: JSON.stringify(body),
+                    contentType: 'application/json;charset=utf-8',
+                    context: this,
+                    success:function(data,status)
+                    {
+                        alert("留言成功");
+                    }
+                })
+           },
+       },
+    });
+
+//初始化的获取数据
+
+</script>
+</body>
+</html>

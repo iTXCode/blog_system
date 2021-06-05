@@ -1,0 +1,182 @@
+
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>blog</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="editor.md/css/editormd.css" />
+
+
+<!--style 标签中写的就是css-->
+<style>
+    [v-cloak]{
+        display: none;
+    }
+</style>
+</head>
+
+<body id="blog">
+<header class="am-topbar">
+  <h1 class="am-topbar-brand">
+    <a href="#">iTXCode</a>
+  </h1>
+
+  <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#doc-topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+  <div class="am-collapse am-topbar-collapse" id="doc-topbar-collapse">
+    <ul class="am-nav am-nav-pills am-topbar-nav">
+      <li class="am-active"><a href="/client_code/admin.html">首页</a></li>
+      <li class="am-dropdown" data-am-dropdown>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<!-- content srart -->
+<div class="am-g am-g-fixed blog-fixed" id="app">
+    <div class="am-u-md-8 am-u-sm-12" >
+
+        <article class="am-g blog-entry-article" v-for="message in messages" v-cloak> 
+            <!--v-for = " " 循环-->
+            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text" style="float: left;">
+                <label for="doc-ipt-email-1" style="color:snow;">留言内容：</label>
+                <span style = "color:snow;">{{message.message_content}}</span>
+                <div class="am-form-group" style="width: 150%;">
+                    <label for="doc-ipt-email-1" style="color:snow;">留言时间：</label>
+                    <input type="email" class=""  v-model="message.message_time" disabled>
+                </div>
+                <!--其中的v-on:click 把当前的html 标签关联上一个鼠标点击事件-->
+                    <!--<h1><a href="#"  style = "color:snow;" v-on:click="get_blog(blog.blog_id)">{{blog.title}}</a></h1>-->
+                    <button type="button" class="am-btn am-btn-danger am-round" v-on:click="delete_message(message.message_id)">删除留言</button>
+                <p><a href="" class="blog-continue">continue reading</a></p>
+            </div>                 
+        </article>
+    </div>
+     
+
+    <div class="am-u-md-4 am-u-sm-12 blog-sidebar">
+        <div class="blog-sidebar-widget blog-bor " v-cloak>
+            <h2 class=" blog-clear-margin blog-text-center blog-title"><span>个人信息展示</span></h2>
+            <img src="images/21.jpg" alt="about me" class="blog-entry-img " style=" background-color:snow;" >
+            <p style="text-emphasis-color:inherit;">{{author}}</p>
+            <p style = "color:snow;"> 我是 {{author}},一个即将步入社会的本科生</p><!--插值表达式-->
+            <p style = "color:snow;">生如蝼蚁当有鸿鹄之志,命如纸薄应怀不屈之心.</p>
+        </div>
+        <div class="blog-sidebar-widget blog-bor blog-clear-margin  am-g  ">
+            <h2 class="blog-text-center blog-title "><span>联系</span></h2>
+            <p>
+                <a href=""><span class="am-icon-qq am-icon-fw am-primary blog-icon " style=" background-color:snow;"></span></a>
+                <a href="https://github.com/iTXCode"><span class="am-icon-github am-icon-fw blog-icon" style=" background-color:snow;"></span></a>
+                <a href=""><span class="am-icon-weibo am-icon-fw blog-icon" style=" background-color:snow;"></span></a>
+                <a href=""><span class="am-icon-weixin am-icon-fw blog-icon" style=" background-color:snow;"></span></a>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- content end -->
+
+
+
+  <footer class="blog-footer">
+  <div class="blog-text-center">© 2021 made by iTXCode</div>     
+  </footer>
+
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="assets/js/amazeui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<script src="editor.md/lib/marked.min.js"></script>
+<script src="editor.md/lib/prettify.min.js"></script>
+<script src="editor.md/lib/raphael.min.js"></script>
+<script src="editor.md/lib/underscore.min.js"></script>
+<script src="editor.md/lib/sequence-diagram.min.js"></script>
+<script src="editor.md/lib/flowchart.min.js"></script>
+<script src="editor.md/lib/jquery.flowchart.min.js"></script>
+<script src="editor.md/editormd.js"></script>
+
+<script>
+    var app = new  Vue({
+        el: '#app',  //e1表示app这个Vue 对象和哪个HTML相关联
+        data: {
+            //data表示所有需要在页面上动态变化的数据
+            //把js中的数据和界面上的内容关联在一起,数据绑定的过程
+            author: 'iTXCode',
+            messages: [
+               //获取博客列表
+            ],
+          
+            message: {
+               //点击博客标题进入标签,用来表示当前页面上栈实的博客的详细内容
+               message_id:null,
+               message_content:null,
+               message_time:null,
+           }
+        }, 
+        methods: {
+           
+        init(){
+            //1.从服务器上获取tag
+            $.ajax({
+                type: "get",
+                url: "/messages",
+                context: this,
+                success: function (data,status) {
+                    this.messages = data;
+                    //2.从服务器上获取博客
+                    //更建议打家把get_blogs写到回调内部
+                    //因为需要先获取到tag信息,然后才能获取博客列表,
+                    //否则tag_id 和 tag_name 的映射关系没办法建立
+                }
+            })
+            
+        },
+      //点击博客标题的时候获取博客的详细内容
+
+      delete_message(message_id){
+         var url="/message/"+message_id;
+          $.ajax({
+              type:"delete",
+              url:url,
+              context:this,
+              sucess:function(data,status){
+                  alert("删除留言成功！");
+                  init();
+              }
+          })
+      }
+       },
+    });
+
+//初始化的获取数据
+app.init();
+</script>
+</body>
+</html>

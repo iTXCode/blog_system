@@ -43,17 +43,11 @@
 
   <div class="am-collapse am-topbar-collapse" id="doc-topbar-collapse">
     <ul class="am-nav am-nav-pills am-topbar-nav">
-      <li class="am-active"><a href="/client_code/index.html">首页</a></li>
-      <li><a href="#" >新增博客</a></li>
+      <li class="am-active"><a href="/client_code/index_test.html">首页</a></li>
+      <li><a href="/client_code/message.html" >去留言</a></li>
       <li class="am-dropdown" data-am-dropdown>
       </li>
     </ul>
-
-    <form class="am-topbar-form am-topbar-left am-form-inline" role="search">
-      <div class="am-form-group">
-        <input type="text" class="am-form-field am-input-sm"  placeholder="搜索" v-on:click="select_blog()">
-      </div>
-    </form>
   </div>
 </header>
 
@@ -79,13 +73,13 @@
           <article  id="blog_view">
     
           </article>
-          <div class="am-form-group" style="width: 150%;" v-show="blog.blog_id!=null">
-            <label for="doc-ipt-email-1" style="color:snow; ">发表评论</label>
+          <div class="am-form-group" style="width: 150%;" v-show="blog.blog_id!=null" v-cloak>
+            <label for="doc-ipt-email-1" style="color:snow; " >发表评论</label>
             <input type="email" class=""  v-model="comment.comment" >
           </div>
       
           <a href="/client_code/index_test.html">
-            <button class="am-btn am-btn-secondary" type="submit" v-on:click="insert_comment(blog.blog_id)" v-show="blog.blog_id!=null">提交</button>
+            <button class="am-btn am-btn-secondary" type="submit" v-on:click="insert_comment(blog.blog_id)" v-cloak>提交</button>
           </a>
       </div> 
 
@@ -247,7 +241,7 @@
             })
         },
         init(){
-          this.get_blogs();
+          
             //1.从服务器上获取tag
             $.ajax({
                 type: "get",
@@ -261,7 +255,7 @@
                     //更建议打家把get_blogs写到回调内部
                     //因为需要先获取到tag信息,然后才能获取博客列表,
                     //否则tag_id 和 tag_name 的映射关系没办法建立
-                    
+                    this.get_blogs();
                 }
             })
             
