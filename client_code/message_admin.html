@@ -66,8 +66,10 @@
                 </div>
                 <!--其中的v-on:click 把当前的html 标签关联上一个鼠标点击事件-->
                     <!--<h1><a href="#"  style = "color:snow;" v-on:click="get_blog(blog.blog_id)">{{blog.title}}</a></h1>-->
-                    <button type="button" class="am-btn am-btn-danger am-round" v-on:click="delete_message(message.message_id)">删除留言</button>
-                <p><a href="" class="blog-continue">continue reading</a></p>
+                    <div>
+                        <button type="button" class="am-btn am-btn-danger am-round" v-on:click="delete_message(message.message_id)">删除留言</button>
+                    </div>
+                <p><a href="#" class="blog-continue">continue reading</a></p>
             </div>                 
         </article>
     </div>
@@ -94,11 +96,6 @@
 </div>
 <!-- content end -->
 
-
-
-  <footer class="blog-footer">
-  <div class="blog-text-center">© 2021 made by iTXCode</div>     
-  </footer>
 
 
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -166,9 +163,13 @@
               type:"delete",
               url:url,
               context:this,
-              sucess:function(data,status){
+              
+              sucess: function(data,status){
                   alert("删除留言成功！");
                   init();
+              },
+              error:function(){
+                alert("删除错误");
               }
           })
       }

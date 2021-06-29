@@ -781,6 +781,7 @@ int main(){
           Json::Value resp_json;
           Json::FastWriter writer;
           bool ret = message_table.Delete(message_id);
+          printf("hehe\n");
 
           if(!ret){
             //这里是调用数据库操作失败
@@ -791,10 +792,13 @@ int main(){
             return;
           }
 
+
           //3.包装一个正确的返回结果
-          resp.status=200;
+          printf("hehe\n");
+          resp_json["ok"] = true;
           resp.set_content(writer.write(resp_json),"application/json");
-          return;
+          printf("hehe\n");
+          return ;
       });
 
      
